@@ -583,6 +583,7 @@ enum FurnaceGUIWindows {
   GUI_WINDOW_USER_PRESETS,
   GUI_WINDOW_REF_PLAYER,
   GUI_WINDOW_MULTI_INS_SETUP,
+  GUI_WINDOW_GEN_WORKSPACE,
   GUI_WINDOW_SPOILER
 };
 
@@ -1694,9 +1695,11 @@ enum NoteInputModes: unsigned char {
 };
 
 struct FurnaceCV;
+class GenWorkspace;
 
 class FurnaceGUI {
   DivEngine* e;
+  GenWorkspace* genWorkspace;
 
   FurnaceGUIRenderBackend renderBackend;
   FurnaceGUIRender* rend;
@@ -2436,6 +2439,7 @@ class FurnaceGUI {
   bool subSongsOpen, findOpen, spoilerOpen, patManagerOpen, sysManagerOpen, clockOpen, speedOpen;
   bool groovesOpen, xyOscOpen, memoryOpen, csPlayerOpen, cvOpen, userPresetsOpen, refPlayerOpen;
   bool multiInsSetupOpen;
+  bool genWorkspaceOpen;
 
   bool cvNotSerious;
 
@@ -3110,6 +3114,7 @@ class FurnaceGUI {
   void drawUserPresets();
   void drawRefPlayer();
   void drawMultiInsSetup();
+  void drawGenWorkspace();
 
   float drawSystemChannelInfo(const DivSysDef* whichDef, int keyHitOffset=-1, float width=-1.0f, int chanCount=-1);
   void drawSystemChannelInfoText(const DivSysDef* whichDef);

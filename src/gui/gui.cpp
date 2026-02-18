@@ -25,6 +25,7 @@
 
 #include "gui.h"
 #include "util.h"
+#include "../gen/genWorkspace.h"
 #include "../ta-log.h"
 #include "../fileutils.h"
 #include "imgui.h"
@@ -91,6 +92,10 @@ void FurnaceGUI::centerNextWindow(const char* name, float w, float h) {
 void FurnaceGUI::bindEngine(DivEngine* eng) {
   e=eng;
   wavePreview.setEngine(e);
+  if (!genWorkspace) {
+    genWorkspace=new GenWorkspace();
+  }
+  genWorkspace->init(e);
 }
 
 void FurnaceGUI::enableSafeMode() {
@@ -3917,6 +3922,7 @@ bool FurnaceGUI::loop() {
   DECLARE_METRIC(userPresets)
   DECLARE_METRIC(refPlayer)
   DECLARE_METRIC(multiInsSetup)
+  DECLARE_METRIC(genWorkspace)
   DECLARE_METRIC(popup)
 
 #ifdef IS_MOBILE
@@ -4567,6 +4573,7 @@ bool FurnaceGUI::loop() {
         IMPORT_CLOSE(userPresetsOpen);
         IMPORT_CLOSE(refPlayerOpen);
         IMPORT_CLOSE(multiInsSetupOpen);
+        IMPORT_CLOSE(genWorkspaceOpen);
       } else if (pendingLayoutImportStep==1) {
         // let the UI settle
       } else if (pendingLayoutImportStep==2) {
@@ -4947,6 +4954,8 @@ bool FurnaceGUI::loop() {
         if (ImGui::MenuItem(_("piano/input pad"),BIND_FOR(GUI_ACTION_WINDOW_PIANO),pianoOpen)) pianoOpen=!pianoOpen;
         if (ImGui::MenuItem(_("reference music player"),BIND_FOR(GUI_ACTION_WINDOW_REF_PLAYER),refPlayerOpen)) refPlayerOpen=!refPlayerOpen;
         if (ImGui::MenuItem(_("multi-ins setup"),BIND_FOR(GUI_ACTION_WINDOW_MULTI_INS_SETUP),multiInsSetupOpen)) multiInsSetupOpen=!multiInsSetupOpen;
+        ImGui::Separator();
+        if (ImGui::MenuItem(_("generative workspace"),NULL,genWorkspaceOpen)) genWorkspaceOpen=!genWorkspaceOpen;
         if (spoilerOpen) if (ImGui::MenuItem(_("spoiler"),NULL,spoilerOpen)) spoilerOpen=!spoilerOpen;
 
         ImGui::EndMenu();
@@ -5212,6 +5221,7 @@ bool FurnaceGUI::loop() {
       MEASURE(userPresets,drawUserPresets());
       MEASURE(refPlayer,drawRefPlayer());
       MEASURE(multiInsSetup,drawMultiInsSetup());
+      MEASURE(genWorkspace,drawGenWorkspace());
 
     }
 
@@ -8337,6 +8347,7 @@ void FurnaceGUI::syncState() {
   userPresetsOpen=e->getConfBool("userPresetsOpen",false);
   refPlayerOpen=e->getConfBool("refPlayerOpen",false);
   multiInsSetupOpen=e->getConfBool("multiInsSetupOpen",false);
+  genWorkspaceOpen=e->getConfBool("genWorkspaceOpen",false);
 
   insListDir=e->getConfBool("insListDir",false);
   waveListDir=e->getConfBool("waveListDir",false);
@@ -8518,6 +8529,7 @@ void FurnaceGUI::commitState(DivConfig& conf) {
   conf.set("userPresetsOpen",userPresetsOpen);
   conf.set("refPlayerOpen",refPlayerOpen);
   conf.set("multiInsSetupOpen",multiInsSetupOpen);
+  conf.set("genWorkspaceOpen",genWorkspaceOpen);
 
   // commit dir state
   conf.set("insListDir",insListDir);
@@ -8677,6 +8689,11 @@ bool FurnaceGUI::finish(bool saveConfig) {
     delete chanOscWorkPool;
   }
 
+  if (genWorkspace!=NULL) {
+    delete genWorkspace;
+    genWorkspace=NULL;
+  }
+
   delete[] opTouched;
   opTouched=NULL;
 
@@ -8725,6 +8742,7 @@ bool FurnaceGUI::requestQuit() {
 
 FurnaceGUI::FurnaceGUI():
   e(NULL),
+  genWorkspace(NULL),
   renderBackend(GUI_BACKEND_SDL),
   rend(NULL),
   sdlWin(NULL),
@@ -8969,6 +8987,7 @@ FurnaceGUI::FurnaceGUI():
   userPresetsOpen(false),
   refPlayerOpen(false),
   multiInsSetupOpen(false),
+  genWorkspaceOpen(false),
   cvNotSerious(false),
   shortIntro(false),
   insListDir(false),

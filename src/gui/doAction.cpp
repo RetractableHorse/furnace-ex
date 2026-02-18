@@ -486,6 +486,9 @@ void FurnaceGUI::doAction(int what) {
         case GUI_WINDOW_MULTI_INS_SETUP:
           multiInsSetupOpen=false;
           break;
+        case GUI_WINDOW_GEN_WORKSPACE:
+          genWorkspaceOpen=false;
+          break;
         case GUI_WINDOW_TUNER:
           tunerOpen=false;
           break;

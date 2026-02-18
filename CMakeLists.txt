@@ -1028,6 +1028,18 @@ src/gui/xyOsc.cpp
 src/gui/gui.cpp
 )
 
+# Generative Workspace module
+set(GEN_SOURCES
+src/gen/genUtil.cpp
+src/gen/genWorkspace.cpp
+src/gen/patchGen.cpp
+src/gen/patternGen.cpp
+src/gen/styleEngine.cpp
+src/gen/stylePresets.cpp
+src/gen/guiGen.cpp
+)
+list(APPEND GUI_SOURCES ${GEN_SOURCES})
+
 if (NOT NO_INTRO)
   list(APPEND GUI_SOURCES src/gui/introTune.cpp)
   list(APPEND GUI_SOURCES src/gui/intro.cpp)
